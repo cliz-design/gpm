@@ -1,7 +1,7 @@
 # GPM - Git Project Manager
 
 [![NPM version](https://img.shields.io/npm/v/@cliz/gpm.svg?style=flat)](https://www.npmjs.com/package/@cliz/gpm)
-[![Build Status](https://github.com/zcorky/gpm/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/zcorky/gpm/actions/workflows/ci.yml)
+[![Build Status](https://github.com/zcorky/gpm/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/zcorky/gpm/actions/workflows/test.yml)
 [![NPM download](https://img.shields.io/npm/dm/@cliz/gpm.svg?style=flat-square)](https://www.npmjs.com/package/@cliz/gpm)
 ![license](https://img.shields.io/github/license/zcorky/gpm.svg)
 [![issues](https://img.shields.io/github/issues/zcorky/gpm.svg)](https://github.com/zcorky/gpm/issues)
