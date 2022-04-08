@@ -1,10 +1,10 @@
 # GPM - Git Project Manager
 
 [![NPM version](https://img.shields.io/npm/v/@cliz/gpm.svg?style=flat)](https://www.npmjs.com/package/@cliz/gpm)
-[![Build Status](https://travis-ci.com/cliz/gpm.svg?branch=master)](https://travis-ci.com/cliz/gpm)
+[![Build Status](https://github.com/zcorky/gpm/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/zcorky/gpm/actions/workflows/ci.yml)
 [![NPM download](https://img.shields.io/npm/dm/@cliz/gpm.svg?style=flat-square)](https://www.npmjs.com/package/@cliz/gpm)
-![license](https://img.shields.io/github/license/cliz/gpm.svg)
-[![issues](https://img.shields.io/github/issues/cliz/gpm.svg)](https://github.com/cliz/gpm/issues)
+![license](https://img.shields.io/github/license/zcorky/gpm.svg)
+[![issues](https://img.shields.io/github/issues/zcorky/gpm.svg)](https://github.com/zcorky/gpm/issues)
 
 Git Package Manager, make you manage and develop projects easily.
 
