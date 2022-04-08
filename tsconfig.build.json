@@ -1,0 +1,13 @@
+{
+  "extends": "@zcorky/tsconfig",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "./lib",
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "./src"
+  ]
+ }
+ 

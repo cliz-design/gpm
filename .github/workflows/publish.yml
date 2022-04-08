@@ -1,0 +1,92 @@
+name: Package Publish 
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  on-success:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.publish.result == 'success' }}
+    steps:
+      - name: Notification Feishu
+        uses: whatwewant/action-robot-feishu@v0.0.13
+        with:
+          url: ${{ secrets.NPM_VERSION_FEISHU_BOT_WEBHOOK_URL }}
+          title: '✅ NPM 发布：${{ github.repository }}'
+          text: |
+            分支: ${{ github.ref }}
+            提交信息: ${{ github.event.head_commit.message }}
+            提交人: ${{ github.actor }}
+            状态: 构建成功（https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}）
+       
+  on-failure:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.publish.result == 'failure' }}
+    steps:
+      - name: Notification Feishu
+        uses: whatwewant/action-robot-feishu@v0.0.13
+        with:
+          url: ${{ secrets.NPM_VERSION_FEISHU_BOT_WEBHOOK_URL }}
+          title: '❌ NPM 发布：${{ github.repository }}'
+          text: |
+            分支: ${{ github.ref }}
+            提交信息: ${{ github.event.head_commit.message }}
+            提交人: ${{ github.actor }}
+            状态: 构建失败（https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}）
+
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get Current Date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+
+      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+        with:
+          token: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+          registry-url: https://registry.npmjs.org
+
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Make Build
+        run: yarn build
+
+      - name: After Build
+        run: git checkout tsconfig.json
+
+      - name: Make Testing
+        run: yarn test
+
+      - name: Make Coverage
+        run: yarn coverage
+
+      - name: Before Publish
+        run: cp .npmrc.template .npmrc
+
+      - name: Make Publish
+        run: yarn publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
