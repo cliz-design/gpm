@@ -25,7 +25,7 @@ export interface IProject {
   updatedAt: Date;
 }
 
-export interface ProjectManagerOptions {}
+export interface ProjectManagerOptions { }
 
 export interface ProjectAddOptions {
   depth?: number;
@@ -93,19 +93,25 @@ export class ProjectManager implements IProjectManager {
   }
 
   public async add(url: string, options?: ProjectAddOptions): Promise<void> {
+    let shouldClone = true;
+
     const project = new Project({ url, workdir: this.workdir });
-    if ((await this.has(project)) && (await this.existDir(project))) {
+    if (await this.has(project) && await this.existDir(project)) {
       throw new Error(
         `project ${project.name}(${project.repo}) found in ${project.path}`,
       );
+    } else if (await this.existDir(project)) {
+      shouldClone = false;
     }
 
-    let cmd = `git clone --progress ${project.url} ${project.path}`;
-    if (options?.depth) {
-      cmd += ` --depth=${options.depth}`;
-    }
+    if (shouldClone) {
+      let cmd = `git clone --progress ${project.url} ${project.path}`;
+      if (options?.depth) {
+        cmd += ` --depth=${options.depth}`;
+      }
 
-    await runInShell(cmd);
+      await runInShell(cmd);
+    }
 
     this.config.set(project.id, project.toJSON());
 
@@ -249,7 +255,7 @@ export class ProjectManagerConfig<Config extends object> {
 
   public isReady = false;
 
-  constructor() {}
+  constructor() { }
 
   private async load() {
     this._config = await config.load({ path: this.path });
