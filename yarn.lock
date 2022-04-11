@@ -341,7 +341,7 @@
     "@cliz/core" "^0.2.3"
     "@zodash/doreamon" "^0.4.51"
 
-"@cliz/cli@^0.1.27", "@cliz/cli@^0.1.30":
+"@cliz/cli@^0.1.30":
   version "0.1.30"
   resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-0.1.30.tgz#ea907955c733e0ebee195e52dfe0da725ca737cc"
   integrity sha512-Q83iZvXunwRhL41/73j7B8IQMfBef1Hn2JGP2xOXM+iZ4T+B3TIdHTFg43gFc6fspqhzKVZC4nhy4hp/XP7bMQ==
@@ -354,12 +354,25 @@
     inquirer "^8.2.0"
     update-notifier "^5.1.0"
 
-"@cliz/commit@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@cliz/commit/-/commit-0.0.12.tgz#17c612254cfcd5705cb3b78f64fed3da078933f7"
-  integrity sha512-ls9ln3iBydl8IHeLpl8iuMW7pV0CNI1Zzz/GLz70Eiwigj/Eef5/jlBKcwfSdSnmwRcM1AFkYtVT+28aYrvj9g==
+"@cliz/cli@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-1.0.3.tgz#ebbbbf57280ef113e5924149dffe761e1df99af0"
+  integrity sha512-EHuU52LNJVXbINO1qko4R4efrjWIfW5Iq9rHfeqlEkAZg1QFwxdPiSh4lhSbMmTSIhP7eJ2COUbV265sKeqFpg==
   dependencies:
-    "@cliz/cli" "^0.1.27"
+    "@caporal/core" "^2.0.2"
+    "@cliz/core" "^1.0.1"
+    "@types/inquirer" "^8.1.3"
+    "@types/update-notifier" "^5.1.0"
+    "@zodash/doreamon" "^1.0.6"
+    inquirer "^8.2.0"
+    update-notifier "^5.1.0"
+
+"@cliz/commit@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@cliz/commit/-/commit-0.0.18.tgz#48d7432a69d31b17c7d7e7839caff7252dda946d"
+  integrity sha512-l8aFpUy6u9x16vrMe2t/yKbI1JzgdZtsGB6+ws9rOAgnjFShVtYZIjnTb6Pgl3oykuUfOHOt0yZ27hX0q+0dOA==
+  dependencies:
+    "@cliz/cli" "^1.0.3"
     "@zodash/git-commit" "^0.0.2"
 
 "@cliz/core@^0.2.2", "@cliz/core@^0.2.3":
@@ -401,12 +414,31 @@
     ora "^4.0.4"
     pretty-ms "^7.0.1"
 
-"@cliz/inlets@^0.12.3":
-  version "0.12.4"
-  resolved "https://registry.yarnpkg.com/@cliz/inlets/-/inlets-0.12.4.tgz#c6e814aed3cd02b9160790aa671f291874fe16d3"
-  integrity sha512-h4uFzHr0Fymx3oX8ifUR0WYcNrIk4lkbhKaIYUC9+KktaqgqX2+93i2VQ+rifzf1ZNk07t/CVkVZYQJDKEpAxQ==
+"@cliz/core@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cliz/core/-/core-1.0.1.tgz#deab7a26623c4712805773cdeb3657c2cefff8c0"
+  integrity sha512-n8654FkHjNe4GWsRWRfGznA2LXXi37P3zyjVNDb7xUyke4sWeGPQmiZjkowm4WV0RiSWx3iUWKY9C+Kg2jHD5Q==
   dependencies:
-    "@cliz/cli" "^0.1.30"
+    "@zcorky/fz" "^1.2.1"
+    "@znode/clipboard" "^0.0.3"
+    "@znode/config" "^0.0.7"
+    "@znode/execa" "^0.2.1"
+    "@znode/fs" "^0.1.15"
+    "@zodash/debounce" "^0.0.20"
+    "@zodash/timeout" "^0.0.7"
+    boxen "^4.2.0"
+    chalk "^4.1.0"
+    commander "^5.1.0"
+    debug "^4.1.1"
+    ora "^4.0.4"
+    pretty-ms "^7.0.1"
+
+"@cliz/inlets@^0.12.8":
+  version "0.12.8"
+  resolved "https://registry.yarnpkg.com/@cliz/inlets/-/inlets-0.12.8.tgz#8778616b0b06ae8e18ea13dab5efa8f12db4b95e"
+  integrity sha512-iaBYsm5n2lKv50IlArZ5NYN8HRNedun9yF1jz4bSHIdrw1xpaj5Jy1kE8ppTl+YcF0YgWNZYwe6i1wGeH1U+hA==
+  dependencies:
+    "@cliz/cli" "^1.0.3"
     "@types/ws" "^7.4.4"
     "@znode/healthcheck" "^0.0.4"
     "@znode/nobot" "^0.0.4"
@@ -420,12 +452,12 @@
     debug "^4.3.1"
     semver "^7.3.5"
 
-"@cliz/open@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@cliz/open/-/open-0.0.2.tgz#fcab820da200c7e43f6a9c9de2b2faac44d1e11a"
-  integrity sha512-qZ5V+++dykZcKXD6Zw9dYdUgF4nE6hm7wHekiNgOGiBASEObkB/pvFLPSkiRtFcMi/nGk5TK7lW9LS4hsI1s4w==
+"@cliz/open@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@cliz/open/-/open-0.0.5.tgz#36a78929c54afe5f5e92f274c4e56ee113e29401"
+  integrity sha512-2q3ZZE11BdI8cOL1jrGOiKnPeyN4gZ0EpMwJEeQY057FJpPs902+Hoxt9ArBa+2rk4vt3XYK47/YYfZkjymrsA==
   dependencies:
-    "@cliz/cli" "^0.1.30"
+    "@cliz/cli" "^1.0.3"
     open "^8.4.0"
 
 "@cliz/proxy@^0.0.3":
@@ -435,12 +467,12 @@
   dependencies:
     "@cliz/cli" "^0.1.30"
 
-"@cliz/web-terminal@^0.7.11":
-  version "0.7.11"
-  resolved "https://registry.yarnpkg.com/@cliz/web-terminal/-/web-terminal-0.7.11.tgz#6ef6ce309d61eaec9185b2a10191d12635c74260"
-  integrity sha512-cRJ7eXZzGPi8gfSMURNr0nM+NcEP4f72lROEmgdnwQPmklk8DQPMHeXhqL5jXFIj7KwM65s5kpYenZrqf+nsyQ==
+"@cliz/web-terminal@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@cliz/web-terminal/-/web-terminal-1.0.4.tgz#7ea306a02a5b6cebe635364216a998469bebbace"
+  integrity sha512-O+OT9Nxqxd+N7HlzA9zBiBh6yBzLJrQ1Ezl9ILDuWQWD98ZOUjKNRJwNZTEdxWQKnL/BOdafZkVmc7PuNeqzhA==
   dependencies:
-    "@cliz/cli" "^0.1.30"
+    "@cliz/cli" "^1.0.3"
     "@koex/core" "^0.13.34"
     "@types/ws" "^7.4.4"
     "@znode/nobot" "^0.0.6"
@@ -1829,7 +1861,7 @@
     "@zodash/unique" "^0.1.7"
     "@zodash/uuid" "^0.1.7"
 
-"@zodash/doreamon@^1.0.2":
+"@zodash/doreamon@^1.0.2", "@zodash/doreamon@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@zodash/doreamon/-/doreamon-1.0.6.tgz#b065891e66f8e99796f2847caee3c6ae7e1590d2"
   integrity sha512-PvkCGJpiIYLfuK66x0xfnluL3aCdXOBf5tjqAaX9/4+iDQ5h1Au0CMaXu0fg7FMlHT1qWBRwzrANINv0A/wvAg==
