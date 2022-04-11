@@ -84,12 +84,12 @@
     "preset": "ts-jest"
   },
   "dependencies": {
-    "@cliz/cli": "^1.0.7",
-    "@cliz/commit": "^0.0.21",
-    "@cliz/inlets": "^0.12.11",
-    "@cliz/open": "^0.0.8",
-    "@cliz/proxy": "^0.0.5",
-    "@cliz/web-terminal": "^1.0.7",
+    "@cliz/cli": "^1.0.8",
+    "@cliz/commit": "^0.0.22",
+    "@cliz/inlets": "^0.12.12",
+    "@cliz/open": "^0.0.9",
+    "@cliz/proxy": "^0.0.6",
+    "@cliz/web-terminal": "^1.0.8",
     "@znode/node-info": "^0.0.14",
     "@znode/os-info": "^0.0.2",
     "git-url-parse": "^11.6.0",
