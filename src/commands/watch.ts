@@ -1,8 +1,7 @@
-import { defineSubCommand, api } from '@cliz/cli';
+import { defineSubCommand } from '@cliz/cli';
 import gpm from '../core';
-import config from '../config';
 
-export default defineSubCommand((createCommand) => {
+export default defineSubCommand((createCommand, { api }) => {
   return createCommand('Project Watch')
     .option('-e, --exec <command>', 'Custom watch command')
     .option('-c, --context <context>', 'Project path')
@@ -19,8 +18,9 @@ export default defineSubCommand((createCommand) => {
         ignore.push(options.ignore);
       }
 
-      if (await api.fs.exist(config.ignoreFilePath)) {
-        const text = await api.fs.readFile(config.ignoreFilePath, 'utf8');
+      const ignoreFilePath = api.path.join(process.cwd(), '.gpmignore');
+      if (await api.fs.exist(ignoreFilePath)) {
+        const text = await api.fs.readFile(ignoreFilePath, 'utf8');
         const lines = text.split(/\r?\n/);
         const cwd = process.cwd();
         lines.forEach((line) => {

@@ -25,28 +25,28 @@ export interface DevToolsOptions {
   context?: string;
 }
 
-export interface BootstrapOptions extends DevToolsOptions {}
+export interface BootstrapOptions extends DevToolsOptions { }
 
-export interface DevOptions extends DevToolsOptions {}
+export interface DevOptions extends DevToolsOptions { }
 
-export interface BuildOptions extends DevToolsOptions {}
+export interface BuildOptions extends DevToolsOptions { }
 
-export interface TestOptions extends DevToolsOptions {}
+export interface TestOptions extends DevToolsOptions { }
 
-export interface FmtOptions extends DevToolsOptions {}
+export interface FmtOptions extends DevToolsOptions { }
 
-export interface RunOptions extends DevToolsOptions {}
+export interface RunOptions extends DevToolsOptions { }
 
-export interface InstallOptions extends DevToolsOptions {}
+export interface InstallOptions extends DevToolsOptions { }
 
-export interface CleanOptions extends DevToolsOptions {}
+export interface CleanOptions extends DevToolsOptions { }
 
 export interface WatchOptions extends DevToolsOptions {
   path?: string;
   ignore?: (string | RegExp)[];
 }
 
-export interface CliOptions extends DevToolsOptions {}
+export interface CliOptions extends DevToolsOptions { }
 
 export class DevTools implements IDevTools {
   private logger = doreamon.logger.getLogger('DevTools');
@@ -75,7 +75,6 @@ export class DevTools implements IDevTools {
 
     await runInShell(command);
   }
-
 
   public async dev(options?: DevOptions) {
     const { logger } = this;
@@ -307,6 +306,7 @@ export class DevTools implements IDevTools {
       __dirname,
       '../../../node_modules/.bin',
     )}/cliz-commit`;
+
     await runInShell(command);
   }
 
@@ -321,7 +321,7 @@ export class DevToolsConfig<Config extends object> {
 
   public isReady = false;
 
-  constructor() {}
+  constructor() { }
 
   private async load() {
     if (await api.fs.exist(this.path)) {

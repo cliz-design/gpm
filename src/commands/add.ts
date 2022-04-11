@@ -1,8 +1,8 @@
-import { defineSubCommand, api, inquirer } from '@cliz/cli';
+import { API, defineSubCommand, inquirer } from '@cliz/cli';
 import gpm from '../core';
 import { GPM } from '../core/gpm';
 
-export default defineSubCommand((createCommand) => {
+export default defineSubCommand((createCommand, { api }) => {
   return createCommand('Add an project')
     .argument('<url>', 'The Git Project Url')
     .option('-d, --depth <depth>', 'Specify git repo clone depth', {
@@ -27,7 +27,7 @@ export default defineSubCommand((createCommand) => {
         await gpm.prepare();
         const projectConfig = gpm.config.get('project');
         if (!projectConfig?.workdir) {
-          await setupConfig(gpm);
+          await setupConfig(gpm, api);
         }
 
         await gpm.project.prepare();
@@ -75,7 +75,7 @@ export default defineSubCommand((createCommand) => {
     });
 });
 
-async function setupConfig(gpm: GPM) {
+async function setupConfig(gpm: GPM, api: API) {
   const answers = await inquirer.prompt([
     {
       name: 'workdir',

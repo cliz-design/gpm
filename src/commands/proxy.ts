@@ -1,7 +1,7 @@
-import { defineSubCommand, api } from '@cliz/cli';
+import { defineSubCommand } from '@cliz/cli';
 import { proxy } from '@cliz/proxy/lib/core/proxy';
 
-export default defineSubCommand((createCommand) => {
+export default defineSubCommand((createCommand, { api }) => {
   return createCommand('Run command in proxy')
     .configure({
       strictArgsCount: false,
