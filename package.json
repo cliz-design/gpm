@@ -1,6 +1,6 @@
 {
   "name": "@cliz/gpm",
-  "version": "1.2.10",
+  "version": "1.2.11",
   "description": "Git Project Manager",
   "keywords": [
     "cliz",
@@ -86,11 +86,11 @@
   },
   "dependencies": {
     "@cliz/cli": "^1.0.18",
-    "@cliz/commit": "^0.0.22",
-    "@cliz/inlets": "^0.12.12",
-    "@cliz/open": "^0.0.9",
-    "@cliz/proxy": "^0.0.6",
-    "@cliz/web-terminal": "^1.0.8",
+    "@cliz/commit": "^0.0.32",
+    "@cliz/inlets": "^0.12.22",
+    "@cliz/open": "^0.0.19",
+    "@cliz/proxy": "^0.0.16",
+    "@cliz/web-terminal": "^1.0.18",
     "git-url-parse": "^11.6.0",
     "prettier": "^2.4.1",
     "semver": "^7.3.5"
