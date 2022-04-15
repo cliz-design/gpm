@@ -1,12 +1,10 @@
 import { defineSubCommand } from '@cliz/cli';
-import { osInfo } from '@znode/os-info';
-import { nodeInfo } from '@znode/node-info';
 
-export default defineSubCommand((createCommand) => {
+export default defineSubCommand((createCommand, { api }) => {
   return createCommand('Get gpm info').action(async () => {
     const info = {
-      os: await osInfo(),
-      node: await nodeInfo(),
+      os: await api.system.getOsInfo(),
+      node: await api.system.getNodeInfo(),
     };
 
     console.info('Platform:', info.os.platform);

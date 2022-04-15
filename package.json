@@ -48,7 +48,8 @@
     "clean": "rm -rf lib",
     "test": "jest -w 1",
     "coverage": "codecov",
-    "cli": "node lib/cli.js"
+    "cli": "node lib/cli.js",
+    "register": "yarn cliz global register"
   },
   "jest": {
     "roots": [
@@ -84,14 +85,12 @@
     "preset": "ts-jest"
   },
   "dependencies": {
-    "@cliz/cli": "^1.0.8",
+    "@cliz/cli": "^1.0.18",
     "@cliz/commit": "^0.0.22",
     "@cliz/inlets": "^0.12.12",
     "@cliz/open": "^0.0.9",
     "@cliz/proxy": "^0.0.6",
     "@cliz/web-terminal": "^1.0.8",
-    "@znode/node-info": "^0.0.14",
-    "@znode/os-info": "^0.0.2",
     "git-url-parse": "^11.6.0",
     "prettier": "^2.4.1",
     "semver": "^7.3.5"
