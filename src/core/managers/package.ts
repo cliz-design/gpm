@@ -34,21 +34,37 @@ export class PackageManager implements IPackageManager {
     }
 
     // 2. release
-    // 2.1 Node.js package
-    const nodejsPath = path.resolve(process.cwd(), 'package.json');
-    // 2.2 Go
-    const goPath = path.resolve(process.cwd(), 'go.mod');
-    // 2.3 Zmicro
-    // const zmicroPath = path.resolve(process.cwd(), 'mod');
+    const projectPath = process.cwd();
 
+    // 2.1 Node.js package
+    const nodejsPath = path.resolve(projectPath, 'package.json');
+    // 2.2 Go
+    const goPath = path.resolve(projectPath, 'go.mod');
+    // 2.3 Zmicro
+    // const zmicroPath = path.resolve(projectPath, 'mod');
+
+    let newVersion = '';
     if (await api.fs.exist(nodejsPath)) {
-      await this.releaseNodePackage(nodejsPath);
+      newVersion = await this.releaseNodePackage(nodejsPath);
     } else if (await api.fs.exist(goPath)) {
-      await this.releaseGoPackage(goPath);
+      newVersion = await this.releaseGoPackage(goPath);
     }
+
+    // 3. commit message
+    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
+
+    // 4. create version tag
+    const tag = `v${newVersion}`;
+    await api.$`git tag ${tag}`;
+
+    // 5. push tag
+    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
+
+    // 6. push master
+    await runInShell(`git push origin master`, { cwd: projectPath });
   }
 
-  private async releaseNodePackage(pkgPath: string) {
+  private async releaseNodePackage(pkgPath: string): Promise<string> {
     const pkg = await api.fs.json.load(pkgPath);
     const projectPath = path.dirname(pkgPath);
 
@@ -73,25 +89,16 @@ export class PackageManager implements IPackageManager {
     // 2. change package.json version and write
     const newVersion = (pkg.version = answers.newVersion as any as string);
     // sorted
-    api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
+    await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
 
     // 3. commit change
     await api.$.cd(projectPath);
     await api.$`git add ${pkgPath}`;
-    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
 
-    // 4. create version tag
-    const tag = `v${newVersion}`;
-    await api.$`git tag ${tag}`;
-
-    // 5. push tag
-    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
-
-    // 6. push master
-    await runInShell(`git push origin master`, { cwd: projectPath });
+    return newVersion;
   }
 
-  private async releaseGoPackage(gomodPath: string) {
+  private async releaseGoPackage(gomodPath: string): Promise<string> {
     const projectPath = path.dirname(gomodPath);
     const versionPath = api.path.join(projectPath, 'version.go');
     let lastVersion = "0.0.0"
@@ -126,27 +133,18 @@ export class PackageManager implements IPackageManager {
       },
     ]);
 
-    // 2. change package.json version and write
+    // 2. change version.go version and write
     const newVersion = answers.newVersion as any as string;
     const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "1.0.1"`);
 
-    // sorted
-    api.fs.writeFile(versionPath, versionFileText);
+    // sync to version.go
+    await api.fs.writeFile(versionPath, versionFileText);
 
     // 3. commit change
     await api.$.cd(projectPath);
     await api.$`git add ${versionPath}`;
-    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
 
-    // 4. create version tag
-    const tag = `v${newVersion}`;
-    await api.$`git tag ${tag}`;
-
-    // 5. push tag
-    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
-
-    // 6. push master
-    await runInShell(`git push origin master`, { cwd: projectPath });
+    return newVersion;
   }
 
   public async prepare() {
