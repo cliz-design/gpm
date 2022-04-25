@@ -43,7 +43,8 @@ export class PackageManager implements IPackageManager {
     // 2.3 Zmicro
     // const zmicroPath = path.resolve(projectPath, 'mod');
 
-    // format: x.y.z or vx.y.z
+    // format: x.y.z, means 1.0.0
+    // notice: not vx.y.z, not v1.0.0
     let newVersion = '';
     if (await api.fs.exist(nodejsPath)) {
       newVersion = await this.releaseNodePackage(nodejsPath);
@@ -51,11 +52,9 @@ export class PackageManager implements IPackageManager {
       newVersion = await this.releaseGoPackage(goPath);
     }
 
-    // fix version
-    //  v1.0.0 -> 1.0.0
-    //  1.0.0 -> 1.0.0
+    // if found v prefix, maybe should check releaseNodePackage or releaseGoPackage
     if (/^v/.test(newVersion)) {
-      newVersion = newVersion.slice(1);
+      throw new Error(`invalid new version ${newVersion}, should not start with v`);
     }
 
     // 3. commit message
@@ -95,7 +94,14 @@ export class PackageManager implements IPackageManager {
     ]);
 
     // 2. change package.json version and write
-    const newVersion = (pkg.version = answers.newVersion as any as string);
+    let newVersion = (pkg.version = answers.newVersion as any as string);
+    // fix version
+    //  v1.0.0 -> 1.0.0
+    //  1.0.0 -> 1.0.0
+    if (/^v/.test(newVersion)) {
+      newVersion = newVersion.slice(1);
+    }
+
     // sorted
     await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
 
@@ -142,7 +148,14 @@ export class PackageManager implements IPackageManager {
     ]);
 
     // 2. change version.go version and write
-    const newVersion = answers.newVersion as any as string;
+    let newVersion = answers.newVersion as any as string;
+    // fix version
+    //  v1.0.0 -> 1.0.0
+    //  1.0.0 -> 1.0.0
+    if (/^v/.test(newVersion)) {
+      newVersion = newVersion.slice(1);
+    }
+
     const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "${newVersion}"`);
 
     // sync to version.go

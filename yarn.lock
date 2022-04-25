@@ -370,10 +370,10 @@
   dependencies:
     "@cliz/core" "^1.0.17"
 
-"@cliz/cli@^1.0.19":
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-1.0.19.tgz#81c4bcdb598ac3de43bc0c434ab1026fc5e64f75"
-  integrity sha512-Gu9I1Q11LOfgjBs32JwBxwSOJB+wwGB31UXlbJ1UG4ygOMYRGNFeUmtS4MJ71SZaVRZ5RAVke+JYTq9DVx/YKg==
+"@cliz/cli@^1.0.20":
+  version "1.0.20"
+  resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-1.0.20.tgz#b4801b63219c86823994a9a3fd55c1caf6cc504a"
+  integrity sha512-WEDbC+nJDf9uiGwbXHmEFfx6sU0twh/+YzBdjGbGzg8IJIAkUowuthICC89bdeWaIZeP14qrP0muWrhedkYkiA==
   dependencies:
     "@cliz/core" "^1.0.17"
 

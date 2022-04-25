@@ -100,7 +100,7 @@
     "preset": "ts-jest"
   },
   "dependencies": {
-    "@cliz/cli": "^1.0.19",
+    "@cliz/cli": "^1.0.20",
     "@cliz/commit": "^0.0.32",
     "@cliz/inlets": "^0.12.22",
     "@cliz/open": "^0.0.19",
