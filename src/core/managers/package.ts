@@ -55,7 +55,7 @@ export class PackageManager implements IPackageManager {
     //  v1.0.0 -> 1.0.0
     //  1.0.0 -> 1.0.0
     if (/^v/.test(newVersion)) {
-      newVersion = newVersion.substr(1);
+      newVersion = newVersion.slice(1);
     }
 
     // 3. commit message
@@ -143,7 +143,7 @@ export class PackageManager implements IPackageManager {
 
     // 2. change version.go version and write
     const newVersion = answers.newVersion as any as string;
-    const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "1.0.1"`);
+    const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "${newVersion}"`);
 
     // sync to version.go
     await api.fs.writeFile(versionPath, versionFileText);
