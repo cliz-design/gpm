@@ -9,7 +9,7 @@ export interface IPackageManager {
   release(option?: ReleaseOptions): Promise<void>;
 }
 
-export interface ReleaseOptions {}
+export interface ReleaseOptions { }
 
 export class PackageManager implements IPackageManager {
   public readonly config = new PackageManagerConfig<{
@@ -17,6 +17,7 @@ export class PackageManager implements IPackageManager {
   }>();
 
   public async release() {
+    // 1. custom release progress with command
     const releaseCommand = this.config.get('release');
     if (releaseCommand) {
       const commands = Array.isArray(releaseCommand)
@@ -32,13 +33,26 @@ export class PackageManager implements IPackageManager {
       });
     }
 
-    // Node.js
-    const pkgPath = path.resolve(process.cwd(), 'package.json');
-    if (!api.fs.exist(pkgPath)) {
-      throw new Error(`Cannot found package.json in current path`);
-    }
+    // 2. release
+    // 2.1 Node.js package
+    const nodejsPath = path.resolve(process.cwd(), 'package.json');
+    // 2.2 Go
+    const goPath = path.resolve(process.cwd(), 'go.mod');
+    // 2.3 Zmicro
+    // const zmicroPath = path.resolve(process.cwd(), 'mod');
 
+    if (await api.fs.exist(nodejsPath)) {
+      await this.releaseNodePackage(nodejsPath);
+    } else if (await api.fs.exist(goPath)) {
+      await this.releaseGoPackage(goPath);
+    }
+  }
+
+  private async releaseNodePackage(pkgPath: string) {
     const pkg = await api.fs.json.load(pkgPath);
+    const projectPath = path.dirname(pkgPath);
+
+    // 1. get version
     const answers = await inquirer.prompt([
       {
         name: 'newVersion',
@@ -56,13 +70,83 @@ export class PackageManager implements IPackageManager {
       },
     ]);
 
+    // 2. change package.json version and write
     const newVersion = (pkg.version = answers.newVersion as any as string);
     // sorted
     api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
+
+    // 3. commit change
+    await api.$.cd(projectPath);
+    await api.$`git add ${pkgPath}`;
+    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
+
+    // 4. create version tag
     const tag = `v${newVersion}`;
     await api.$`git tag ${tag}`;
 
-    await runInShell(`git push origin ${tag}`);
+    // 5. push tag
+    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
+
+    // 6. push master
+    await runInShell(`git push origin master`, { cwd: projectPath });
+  }
+
+  private async releaseGoPackage(gomodPath: string) {
+    const projectPath = path.dirname(gomodPath);
+    const versionPath = api.path.join(projectPath, 'version.go');
+    let lastVersion = "0.0.0"
+    if (!await api.fs.exist(versionPath)) {
+      throw new Error(`version.go not found, please create it first, must include format: var Version = "1.0.0"`);
+    }
+
+    const text = await api.fs.readFile(versionPath, 'utf8');
+    const matched = text.match(/var Version = "(.*)"/);
+
+    if (!matched || !matched[1]) {
+      throw new Error(`invalid version.go, should be format like: var Version = "1.0.0"`);
+    }
+
+    lastVersion = matched[1];
+
+    // 1. get version
+    const answers = await inquirer.prompt([
+      {
+        name: 'newVersion',
+        type: 'text',
+        message: 'New version ?',
+        default: semver.inc(lastVersion, 'patch'),
+        validate: (newVersion) => {
+          if (!newVersion) throw new Error(`New version is required`);
+          if (!semver.gt(newVersion, lastVersion)) {
+            throw new Error(`New version should large than ${lastVersion}`);
+          }
+
+          return true;
+        },
+      },
+    ]);
+
+    // 2. change package.json version and write
+    const newVersion = answers.newVersion as any as string;
+    const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "1.0.1"`);
+
+    // sorted
+    api.fs.writeFile(versionPath, versionFileText);
+
+    // 3. commit change
+    await api.$.cd(projectPath);
+    await api.$`git add ${versionPath}`;
+    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
+
+    // 4. create version tag
+    const tag = `v${newVersion}`;
+    await api.$`git tag ${tag}`;
+
+    // 5. push tag
+    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
+
+    // 6. push master
+    await runInShell(`git push origin master`, { cwd: projectPath });
   }
 
   public async prepare() {
@@ -76,7 +160,7 @@ export class PackageManagerConfig<Config extends object> {
 
   public isReady = false;
 
-  constructor() {}
+  constructor() { }
 
   private async load() {
     if (await api.fs.exist(this.path)) {
