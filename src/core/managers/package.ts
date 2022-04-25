@@ -94,13 +94,14 @@ export class PackageManager implements IPackageManager {
     ]);
 
     // 2. change package.json version and write
-    let newVersion = (pkg.version = answers.newVersion as any as string);
+    let newVersion = answers.newVersion as any as string;
     // fix version
     //  v1.0.0 -> 1.0.0
     //  1.0.0 -> 1.0.0
     if (/^v/.test(newVersion)) {
       newVersion = newVersion.slice(1);
     }
+    pkg.version = newVersion;
 
     // sorted
     await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
