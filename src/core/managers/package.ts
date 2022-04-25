@@ -43,11 +43,19 @@ export class PackageManager implements IPackageManager {
     // 2.3 Zmicro
     // const zmicroPath = path.resolve(projectPath, 'mod');
 
+    // format: x.y.z or vx.y.z
     let newVersion = '';
     if (await api.fs.exist(nodejsPath)) {
       newVersion = await this.releaseNodePackage(nodejsPath);
     } else if (await api.fs.exist(goPath)) {
       newVersion = await this.releaseGoPackage(goPath);
+    }
+
+    // fix version
+    //  v1.0.0 -> 1.0.0
+    //  1.0.0 -> 1.0.0
+    if (/^v/.test(newVersion)) {
+      newVersion = newVersion.substr(1);
     }
 
     // 3. commit message
