@@ -101,8 +101,6 @@ export class PackageManager implements IPackageManager {
       newVersion = newVersion.slice(1);
     }
 
-    console.log('new version:', newVersion);
-    process.exit(1)
     return newVersion;
   }
 
@@ -111,7 +109,7 @@ export class PackageManager implements IPackageManager {
     const projectPath = path.dirname(pkgPath);
 
     // 1. get version
-    pkg.version = await this.inputNewVersion(pkg.version);
+    const newVersion = pkg.version = await this.inputNewVersion(pkg.version);
 
     // sorted
     await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
@@ -120,7 +118,7 @@ export class PackageManager implements IPackageManager {
     await api.$.cd(projectPath);
     await api.$`git add ${pkgPath}`;
 
-    return pkg.version;
+    return newVersion;
   }
 
   private async releaseGoPackage(gomodPath: string): Promise<string> {
