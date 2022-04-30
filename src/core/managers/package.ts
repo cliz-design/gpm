@@ -71,21 +71,20 @@ export class PackageManager implements IPackageManager {
     await runInShell(`git push origin master`, { cwd: projectPath });
   }
 
-  private async releaseNodePackage(pkgPath: string): Promise<string> {
-    const pkg = await api.fs.json.load(pkgPath);
-    const projectPath = path.dirname(pkgPath);
-
-    // 1. get version
+  // inputNewVersion from origin version to new version
+  //  1.0.0 -> 1.0.1
+  private async inputNewVersion(originVersion: string) {
     const answers = await inquirer.prompt([
       {
         name: 'newVersion',
         type: 'text',
         message: 'New version ?',
-        default: semver.inc(pkg.version, 'patch'),
+        default: `v${semver.inc(originVersion, 'patch')}`,
         validate: (newVersion) => {
           if (!newVersion) throw new Error(`New version is required`);
-          if (!semver.gt(newVersion, pkg.version)) {
-            throw new Error(`New version should large than ${pkg.version}`);
+          if (!/^v/.test(newVersion)) throw new Error(`New version should start with v`);
+          if (!semver.gt(newVersion.slice(1), originVersion)) {
+            throw new Error(`New version should large than ${originVersion}`);
           }
 
           return true;
@@ -101,7 +100,16 @@ export class PackageManager implements IPackageManager {
     if (/^v/.test(newVersion)) {
       newVersion = newVersion.slice(1);
     }
-    pkg.version = newVersion;
+
+    return newVersion;
+  }
+
+  private async releaseNodePackage(pkgPath: string): Promise<string> {
+    const pkg = await api.fs.json.load(pkgPath);
+    const projectPath = path.dirname(pkgPath);
+
+    // 1. get version
+    pkg.version = await this.inputNewVersion(pkg.version);
 
     // sorted
     await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
@@ -110,7 +118,7 @@ export class PackageManager implements IPackageManager {
     await api.$.cd(projectPath);
     await api.$`git add ${pkgPath}`;
 
-    return newVersion;
+    return pkg.version;
   }
 
   private async releaseGoPackage(gomodPath: string): Promise<string> {
@@ -131,31 +139,7 @@ export class PackageManager implements IPackageManager {
     lastVersion = matched[1];
 
     // 1. get version
-    const answers = await inquirer.prompt([
-      {
-        name: 'newVersion',
-        type: 'text',
-        message: 'New version ?',
-        default: semver.inc(lastVersion, 'patch'),
-        validate: (newVersion) => {
-          if (!newVersion) throw new Error(`New version is required`);
-          if (!semver.gt(newVersion, lastVersion)) {
-            throw new Error(`New version should large than ${lastVersion}`);
-          }
-
-          return true;
-        },
-      },
-    ]);
-
-    // 2. change version.go version and write
-    let newVersion = answers.newVersion as any as string;
-    // fix version
-    //  v1.0.0 -> 1.0.0
-    //  1.0.0 -> 1.0.0
-    if (/^v/.test(newVersion)) {
-      newVersion = newVersion.slice(1);
-    }
+    const newVersion = await this.inputNewVersion(lastVersion);
 
     const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "${newVersion}"`);
 
