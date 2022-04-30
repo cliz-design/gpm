@@ -101,6 +101,8 @@ export class PackageManager implements IPackageManager {
       newVersion = newVersion.slice(1);
     }
 
+    console.log('new version:', newVersion);
+    process.exit(1)
     return newVersion;
   }
 
