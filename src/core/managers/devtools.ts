@@ -65,8 +65,20 @@ export class DevTools implements IDevTools {
   }>();
 
   public async bootstrap(options?: BuildOptions) {
-    const command =
-      options?.command ?? this.config.get('bootstrap') ?? 'yarn bootstrap';
+    let command =
+      options?.command ?? this.config.get('bootstrap') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn bootstrap';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm run bootstrap';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm run bootstrap';
+      } else {
+        command = 'yarn bootstrap';
+      }
+    }
 
     if (Array.isArray(command)) {
       await Promise.all(command.map((e) => runInShell(e)));
@@ -244,7 +256,19 @@ export class DevTools implements IDevTools {
   }
 
   public async cli(options?: CliOptions) {
-    const command = options?.command ?? this.config.get('cli') ?? 'yarn cli';
+    let command = options?.command ?? this.config.get('cli') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn cli';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm run cli';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm run cli';
+      } else {
+        command = 'yarn cli';
+      }
+    }
 
     // parallel
     if (Array.isArray(command)) {
@@ -256,7 +280,19 @@ export class DevTools implements IDevTools {
   }
 
   public async install(options?: InstallOptions) {
-    const command = options?.command ?? this.config.get('install') ?? 'yarn';
+    let command = options?.command ?? this.config.get('install') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm';
+      } else {
+        command = 'yarn';
+      }
+    }
 
     if (Array.isArray(command)) {
       await Promise.all(command.map((e) => runInShell(e)));
