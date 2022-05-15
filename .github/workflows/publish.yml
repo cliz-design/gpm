@@ -9,6 +9,7 @@ jobs:
   on-success:
     needs: publish
     runs-on: ubuntu-latest
+    container: whatwewant/zmicro:v1.16.5
     if: ${{ always() && needs.publish.result == 'success' }}
     steps:
       - name: Notification Feishu
@@ -25,6 +26,7 @@ jobs:
   on-failure:
     needs: publish
     runs-on: ubuntu-latest
+    container: whatwewant/zmicro:v1.16.5
     if: ${{ always() && needs.publish.result == 'failure' }}
     steps:
       - name: Notification Feishu
@@ -40,6 +42,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    container: whatwewant/node-builder:v16-1.4.5
 
     steps:
       - name: Get Current Date
@@ -50,15 +53,8 @@ jobs:
         with:
           fetch-depth: '0'
 
-      - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-        with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-          registry-url: https://registry.npmjs.org
+      - name: Fix Git Permissions
+        run: git config --global --add safe.directory $PWD
 
       - name: Cache node_modules
         uses: actions/cache@v2
