@@ -41,6 +41,7 @@ export default defineSubCommand((createCommand) => {
 
       return await gpm.devtools.dev({
         command,
+        context,
       });
     });
 });
