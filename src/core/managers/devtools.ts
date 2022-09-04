@@ -132,6 +132,7 @@ export class DevTools implements IDevTools {
 
   public async fmt(options?: FmtOptions) {
     let command = options?.command ?? this.config.get('fmt');
+    const context = options?.context ?? process.cwd();
     if (!command) {
       const prettier = `${resolve(
         __dirname,
@@ -144,7 +145,7 @@ export class DevTools implements IDevTools {
 
       let dir = 'src/**/*.{ts,tsx,js,jsx,json,md}';
       // monorepo
-      if (await api.fs.exist(resolve(__dirname, 'packages/'))) {
+      if (await api.fs.exist(resolve(context, 'packages/'))) {
         dir = `packages/**/src/*.{ts,tsx,js,jsx,json,md}`;
       }
 
