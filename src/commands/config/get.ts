@@ -5,7 +5,7 @@ export default defineSubCommand((createCommand) => {
   return createCommand('Get gpm config')
     .argument('<key>', 'The Config Key')
     .option('-g, --global', 'Get global config')
-    .action(async ({ args, options }) => {
+    .action(async ({ args }) => {
       try {
         const key = args.key as any as string;
         // const global = options.global as any as boolean;
