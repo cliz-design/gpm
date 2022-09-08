@@ -340,6 +340,8 @@ export class DevTools implements IDevTools {
     }
   }
 
+
+  // xxx
   public async commit() {
     const command = `${resolve(
       __dirname,

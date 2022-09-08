@@ -354,6 +354,28 @@
     ora "^4.0.4"
     pretty-ms "^7.0.1"
 
+"@cliz/api@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@cliz/api/-/api-1.0.12.tgz#47f7bfd3997eef8dddd40553e5fb4b6458d1bd69"
+  integrity sha512-5VuYHBYw/P5CnX8lgW5MspB7fKtx5M1npBUrIokuoeMcxIlxUwjuzTQBL/DzsbERU/5O332rOLJH0afXsEvQew==
+  dependencies:
+    "@types/listr" "^0.14.4"
+    "@zcorky/fz" "^1.2.15"
+    "@znode/clipboard" "^0.0.4"
+    "@znode/config" "^0.0.17"
+    "@znode/execa" "^0.2.4"
+    "@znode/fs" "^1.0.2"
+    "@znode/node-info" "^0.0.14"
+    "@znode/os-info" "^0.0.3"
+    "@zodash/debounce" "^0.0.20"
+    "@zodash/timeout" "^0.0.7"
+    boxen "^4.2.0"
+    chalk "^4.1.0"
+    debug "^4.1.1"
+    listr "^0.14.3"
+    ora "^4.0.4"
+    pretty-ms "^7.0.1"
+
 "@cliz/cli@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-0.0.2.tgz#83ec5c5c66beac5a8c96a0eba77796abed2c69b9"
@@ -370,13 +392,21 @@
   dependencies:
     "@cliz/core" "^1.0.17"
 
-"@cliz/commit@^0.0.35":
-  version "0.0.35"
-  resolved "https://registry.yarnpkg.com/@cliz/commit/-/commit-0.0.35.tgz#e11eea2cc7a4ae027e6b604ebf565c93f296d16f"
-  integrity sha512-nagmy0+7sBUtfiNcp4nUnlEKdbdGsMjHE471ioieT4TaQCCR8NYT5M+ninQ/3uN0X/X7Tu0drKngyeuYBO/hfg==
+"@cliz/cli@^1.0.23":
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-1.0.23.tgz#de7be0d868f5fc8a6415c78ebc1ec9981b53a21a"
+  integrity sha512-BT5FLrI2XwC59rqaw1dCMSp54aztVTvRNPKIbupYusxlQKbWhIVb0yxiTUhd4ObueDLOyLRAZeNiHdmZUtg0NQ==
   dependencies:
-    "@cliz/cli" "^1.0.21"
+    "@cliz/core" "^1.0.18"
+
+"@cliz/commit@^0.0.38":
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/@cliz/commit/-/commit-0.0.38.tgz#7ec17db4990be2ce8a2e4bfc328f9b1d58fa70c6"
+  integrity sha512-0zpSf/0WWH8q0QcPYaouOyUsKreRP2QjL0nItIf7KztEFNVsW3omyHf1iFYP054POIuhrgKiJ85mh6yxkmlyzQ==
+  dependencies:
+    "@cliz/cli" "^1.0.23"
     "@zodash/git-commit" "^0.0.2"
+    tree-kill "^1.2.2"
 
 "@cliz/core@^0.2.2", "@cliz/core@^0.2.3":
   version "0.2.7"
@@ -405,6 +435,20 @@
   dependencies:
     "@caporal/core" "^2.0.2"
     "@cliz/api" "^1.0.11"
+    "@types/inquirer" "^8.1.3"
+    "@types/update-notifier" "^5.1.0"
+    "@zodash/doreamon" "^1.0.6"
+    "@zodash/logger" "^0.2.30"
+    inquirer "^8.2.0"
+    update-notifier "^5.1.0"
+
+"@cliz/core@^1.0.18":
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@cliz/core/-/core-1.0.18.tgz#ec71043e3a4b8273524299b7299832fd38a8d49b"
+  integrity sha512-NOR6j2HoqnhAYTjKuM6qi9cE4F/Ig1oLOA9ofu2m/c0FnWYFqrIl2/26a5Re4upb/HD05Fo92NBWRs2iRMng3g==
+  dependencies:
+    "@caporal/core" "^2.0.2"
+    "@cliz/api" "^1.0.12"
     "@types/inquirer" "^8.1.3"
     "@types/update-notifier" "^5.1.0"
     "@zodash/doreamon" "^1.0.6"
@@ -1543,6 +1587,14 @@
     "@znode/dotenv" "^0.0.10"
     "@znode/fs" "^1.0.2"
 
+"@znode/config@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@znode/config/-/config-0.0.17.tgz#01919e648d9e79c0cbc06739e5160c31f627a9b4"
+  integrity sha512-Bz4wWwrxEBddGfm2zJ3SIexUS0ektsnfrLx+SPIPCpmIjHBdyzpSeiIHj9QRan/fdojTYRoitF8o+C8nT/9fMA==
+  dependencies:
+    "@znode/dotenv" "^0.0.10"
+    "@znode/fs" "^1.0.2"
+
 "@znode/dotenv@^0.0.10":
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/@znode/dotenv/-/dotenv-0.0.10.tgz#176c372245e368f1ad16c07d440a3972ec4bfbd2"
@@ -1554,6 +1606,19 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@znode/execa/-/execa-0.2.3.tgz#8e2bf106d44c6acf17d45a8c0ca6cdbf1a58242d"
   integrity sha512-noFE3iVBl6XFmIAAsnGK2aUvjAZyxzhTcIOH3XZc7JEgMZ9N/TO1dRMpP4Qn/WDvDRM+TdMwBm/Kt3363R60wQ==
+  dependencies:
+    "@zcorky/fz" "^1.2.9"
+    "@znode/exit-codes" "^0.0.3"
+    "@zodash/event" "^0.1.8"
+    chalk "^4.1.2"
+    globby "11"
+    ps-tree "^1.2.0"
+    which "^2.0.2"
+
+"@znode/execa@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@znode/execa/-/execa-0.2.4.tgz#321104dd50703def56d200c6163f452d23956ff5"
+  integrity sha512-6sBIAPlFVc8OaFlC3pzWUXJ72P/MmUeqCRth3ZNa71ZeAq6ZP5pzsefo7KTsubmtuJl8P5HlTfps+OdcMoZGMA==
   dependencies:
     "@zcorky/fz" "^1.2.9"
     "@znode/exit-codes" "^0.0.3"
@@ -1700,10 +1765,25 @@
   dependencies:
     "@znode/execa" "^0.2.3"
 
+"@znode/os-distribution@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@znode/os-distribution/-/os-distribution-1.0.1.tgz#1c67bf6aaea846a26198533595ae67917682c435"
+  integrity sha512-4EUMT5fWZniPCIyvhjZfrS7fied2VgNv6i8+49ErCPQb+H60M6t6PMiM3U3iHBpJPISPZwS78lx+0L3MBeNhjw==
+  dependencies:
+    "@znode/execa" "^0.2.4"
+    "@zodash/cache" "^0.0.6"
+
 "@znode/os-info@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@znode/os-info/-/os-info-0.0.2.tgz#bf6bcc9dbb4d85ae4121e0580ef3a29417632474"
   integrity sha512-q3nvgpKMn3a99VuMNQlusbPi7gOo7FWhOXXeYJR7a9Vim1CeFhyi51PUPTU2AaFAtBtVDn5Dqh/P5ekifrFNBw==
+
+"@znode/os-info@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@znode/os-info/-/os-info-0.0.3.tgz#4d4c8938cba2bcf68205acacbd5312124eeee460"
+  integrity sha512-4Z5qEvdZmp+vZlmnsS5LLhFwJcTFLjXWyrWBFQLq/klKBGnVXV0C4jUYETKc6hatuwdrDXBwCz2voZRp8gYGpA==
+  dependencies:
+    "@znode/os-distribution" "^1.0.1"
 
 "@znode/websocket@^0.2.8":
   version "0.2.11"
@@ -8004,15 +8084,15 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@4.4.3:
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.3.tgz#bdc5407caa2b109efd4f82fe130656f977a29324"
-  integrity sha512-4xfscpisVgqqDfPaJo5vkd+Qd/ItkoagnHpufr+i2QCHBsNYp+G7UAoyFl8aPtx879u38wPV65rZ8qbGZijalA==
-
 typescript@^4.4.3:
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.3.tgz#eefeafa6afdd31d725584c67a0eaba80f6fc6c6c"
   integrity sha512-yNIatDa5iaofVozS/uQJEl3JRWLKKGJKh6Yaiv0GLGSuhpFJe7P3SbHZ8/yjAHRQwKRoA6YZqlfjXWmVzoVSMw==
+
+typescript@^4.6.3:
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.2.tgz#e3b33d5ccfb5914e4eeab6699cf208adee3fd790"
+  integrity sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
