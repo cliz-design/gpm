@@ -1,4 +1,4 @@
-import { api } from '@cliz/cli';
+import { api, doreamon } from '@cliz/cli';
 import * as config from '@znode/config';
 
 export class ConfigManager<Config> {
@@ -49,7 +49,7 @@ export class ConfigManager<Config> {
   public get<K extends keyof Config>(key: K): Config[K] {
     this.ensure();
 
-    return this._config[key];
+    return doreamon.object.get(this._config as any, key as any);
   }
 
   public set<K extends keyof Config>(key: string, value: Config[K], persist?: boolean) {
@@ -58,10 +58,26 @@ export class ConfigManager<Config> {
     if (!value) {
       delete this._config[key];
     } else {
-      this._config[key] = value;
+      if (key.indexOf('.') !== -1) {
+        // doreamon.object.set(this._config as any, key as any, value);
+        const paths = key.split('.');
+        let object = {};
+        for (let i = 0; i < paths.length - 1; i++) {
+          const path = paths[i];
+          if (!this._config[path]) {
+            this._config[path] = {} as any;
+          }
+
+          object = this._config[path];
+        }
+
+        object[paths[paths.length - 1]] = value;
+      } else {
+        this._config[key] = value;
+      }
     }
 
-    if (!persist) {
+    if (!!persist) {
       this.persist();
     }
   }
