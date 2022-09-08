@@ -1,5 +1,5 @@
+import { ConfigManager } from './config';
 import { api, inquirer } from '@cliz/cli';
-import * as config from '@znode/config';
 import * as path from 'path';
 import * as semver from 'semver';
 import { Event as EventEmitter } from '@zodash/event';
@@ -11,10 +11,12 @@ export interface IPackageManager {
 
 export interface ReleaseOptions { }
 
+export interface PackageManagerConfig {
+  release?: string | string[],
+}
+
 export class PackageManager implements IPackageManager {
-  public readonly config = new PackageManagerConfig<{
-    release?: string | string[];
-  }>();
+  public readonly config = new ConfigManager<PackageManagerConfig>(api.path.cwd('.gpm.yml'));
 
   public async release() {
     // 1. custom release progress with command
@@ -155,70 +157,6 @@ export class PackageManager implements IPackageManager {
 
   public async prepare() {
     await this.config.prepare();
-  }
-}
-
-export class PackageManagerConfig<Config extends object> {
-  public path = path.join(process.cwd(), '.gpm.yml'); // $PWD/.gpm.yml
-  private _config: Config;
-
-  public isReady = false;
-
-  constructor() { }
-
-  private async load() {
-    if (await api.fs.exist(this.path)) {
-      console.log('xxx:');
-      this._config = await config.load({ path: this.path });
-    } else {
-      this._config = {} as any;
-    }
-
-    this.isReady = true;
-  }
-
-  private async sync() {
-    // sort config
-    const config = Object.keys(this._config)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((all, path) => {
-        all[path] = this._config[path];
-        return all;
-      }, {} as Config);
-
-    await api.fs.yml.write(this.path, config);
-  }
-
-  private ensure() {
-    if (!this.isReady) {
-      throw new Error(`config is not ready`);
-    }
-  }
-
-  public async prepare() {
-    await this.load();
-  }
-
-  public get<K extends keyof Config>(key: K): Config[K] {
-    this.ensure();
-
-    return this._config[key];
-  }
-
-  public set<K extends keyof Config>(key: string, value: Config[K]) {
-    this.ensure();
-
-    if (!value) {
-      delete this._config[key];
-    } else {
-      this._config[key] = value;
-    }
-
-    this.sync().catch((error) => console.error('config sync error:', error));
-  }
-
-  public getAll(): Config {
-    return this._config;
   }
 }
 

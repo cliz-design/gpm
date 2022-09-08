@@ -1,9 +1,9 @@
 import { resolve } from 'path';
 import { ChildProcess } from 'child_process';
 import { api, inquirer, doreamon } from '@cliz/cli';
-import * as config from '@znode/config';
 
 import { runInBackground, runInShell } from '../utils';
+import { ConfigManager } from './config';
 
 export interface IDevTools {
   bootstrap(options?: BootstrapOptions): Promise<void>;
@@ -48,21 +48,23 @@ export interface WatchOptions extends DevToolsOptions {
 
 export interface CliOptions extends DevToolsOptions { }
 
+export interface DevToolsConfig {
+  bootstrap?: string;
+  dev?: string;
+  build?: string;
+  test?: string;
+  fmt?: string;
+  run?: string;
+  watch?: string;
+  cli?: string;
+  install?: string;
+  clean?: string;
+}
+
 export class DevTools implements IDevTools {
   private logger = doreamon.logger.getLogger('DevTools');
 
-  public readonly config = new DevToolsConfig<{
-    bootstrap?: string;
-    dev?: string;
-    build?: string;
-    test?: string;
-    fmt?: string;
-    run?: string;
-    watch?: string;
-    cli?: string;
-    install?: string;
-    clean?: string;
-  }>();
+  public readonly config = new ConfigManager<DevToolsConfig>(api.path.cwd('.gpm.yml'));
 
   public async bootstrap(options?: BuildOptions) {
     let command =
@@ -349,68 +351,5 @@ export class DevTools implements IDevTools {
 
   public async prepare() {
     await this.config.prepare();
-  }
-}
-
-export class DevToolsConfig<Config extends object> {
-  public path = resolve(process.cwd(), '.gpm.yml'); // $PWD/.gpm.yml
-  private _config: Config;
-
-  public isReady = false;
-
-  constructor() { }
-
-  private async load() {
-    if (await api.fs.exist(this.path)) {
-      this._config = await config.load({ path: this.path });
-    } else {
-      this._config = {} as any;
-    }
-
-    this.isReady = true;
-  }
-
-  private async sync() {
-    // sort config
-    const config = Object.keys(this._config)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((all, path) => {
-        all[path] = this._config[path];
-        return all;
-      }, {} as Config);
-
-    await api.fs.yml.write(this.path, config);
-  }
-
-  private ensure() {
-    if (!this.isReady) {
-      throw new Error(`config is not ready`);
-    }
-  }
-
-  public async prepare() {
-    await this.load();
-  }
-
-  public get<K extends keyof Config>(key: K): Config[K] {
-    this.ensure();
-
-    return this._config?.[key] ?? null;
-  }
-
-  public set<K extends keyof Config>(key: string, value: Config[K]) {
-    this.ensure();
-
-    if (!value) {
-      delete this._config[key];
-    } else {
-      this._config[key] = value;
-    }
-
-    this.sync().catch((error) => console.error('config sync error:', error));
-  }
-
-  public getAll(): Config {
-    return this._config;
   }
 }
