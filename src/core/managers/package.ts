@@ -80,7 +80,7 @@ export class PackageManager implements IPackageManager {
       {
         name: 'newVersion',
         type: 'text',
-        message: 'New version ?',
+        message: `New version (origin: ${originVersion})?`,
         default: `v${semver.inc(originVersion, 'patch')}`,
         validate: (newVersion) => {
           if (!newVersion) throw new Error(`New version is required`);
