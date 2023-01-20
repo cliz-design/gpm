@@ -187,7 +187,7 @@ export class ProjectManager implements IProjectManager {
   public async search(keyword?: string) {
     const config = this.config.getAll();
     const projects = Object.values(config).sort((a, b) =>
-      a.id.localeCompare(b.id),
+      a?.id?.localeCompare(b?.id),
     );
 
     if (!keyword) {
