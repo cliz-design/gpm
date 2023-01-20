@@ -94,6 +94,12 @@ export class ProjectManager implements IProjectManager {
     let shouldClone = true;
 
     const project = new Project({ url, workdir: this.workdir });
+
+    // save data
+    if (!this.config.get(project.id)) {
+      this.config.set(project.id, project.toJSON(), true);
+    }
+
     if (await this.has(project) && await this.existDir(project)) {
       throw new Error(
         `project ${project.name}(${project.repo}) found in ${project.path}`,
@@ -215,6 +221,9 @@ export class ProjectManager implements IProjectManager {
     }
 
     await this.config.prepare();
+
+    // @TODO
+    await this.config.nomorlize();
   }
 
   public get(url: string) {
