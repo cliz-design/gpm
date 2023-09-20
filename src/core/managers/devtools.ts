@@ -33,7 +33,9 @@ export interface BuildOptions extends DevToolsOptions { }
 
 export interface TestOptions extends DevToolsOptions { }
 
-export interface FmtOptions extends DevToolsOptions { }
+export interface FmtOptions extends DevToolsOptions {
+  dirOrGlob?: string;
+}
 
 export interface RunOptions extends DevToolsOptions { }
 
@@ -145,13 +147,13 @@ export class DevTools implements IDevTools {
         '../../../config/prettierrc.json',
       );
 
-      let dir = 'src/**/*.{ts,tsx,js,jsx,json,md}';
+      let glob = options?.dirOrGlob ?? `src/**/*.{ts,tsx,js,jsx,json,md}`;
       // monorepo
       if (await api.fs.exist(resolve(context, 'packages/'))) {
-        dir = `packages/**/src/*.{ts,tsx,js,jsx,json,md}`;
+        glob = options?.dirOrGlob ? `packages/**/${options?.dirOrGlob}` : `packages/**/src/*.{ts,tsx,js,jsx,json,md}`;
       }
 
-      command = `${prettier} --no-error-on-unmatched-pattern --write '${dir}' --config ${prettierConfigPath}`;
+      command = `${prettier} --no-error-on-unmatched-pattern --write '${glob}' --config ${prettierConfigPath}`;
     }
 
     if (Array.isArray(command)) {
