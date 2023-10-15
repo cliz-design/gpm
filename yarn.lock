@@ -376,6 +376,28 @@
     ora "^4.0.4"
     pretty-ms "^7.0.1"
 
+"@cliz/api@^1.0.16":
+  version "1.0.16"
+  resolved "https://registry.npmmirror.com/@cliz/api/-/api-1.0.16.tgz#502845d4ec1609938df35b99a84c32f92df46d1b"
+  integrity sha512-Ogvz+Jkbz2LLIyEnmGlyRWITF+yJnlzUoYoaakRrv5Cq2On+2UpZv979Ux7TWeqdh1DR+gd/k/jVUTSWkQkD0Q==
+  dependencies:
+    "@types/listr" "^0.14.4"
+    "@zcorky/fz" "^1.2.15"
+    "@znode/clipboard" "^0.0.4"
+    "@znode/config" "^0.0.17"
+    "@znode/execa" "^0.2.4"
+    "@znode/fs" "^1.0.2"
+    "@znode/node-info" "^0.0.14"
+    "@znode/os-info" "^0.0.3"
+    "@zodash/debounce" "^0.0.20"
+    "@zodash/timeout" "^0.0.7"
+    boxen "^4.2.0"
+    chalk "^4.1.0"
+    debug "^4.1.1"
+    listr "^0.14.3"
+    ora "^4.0.4"
+    pretty-ms "^7.0.1"
+
 "@cliz/cli@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@cliz/cli/-/cli-0.0.2.tgz#83ec5c5c66beac5a8c96a0eba77796abed2c69b9"
@@ -398,6 +420,13 @@
   integrity sha512-BT5FLrI2XwC59rqaw1dCMSp54aztVTvRNPKIbupYusxlQKbWhIVb0yxiTUhd4ObueDLOyLRAZeNiHdmZUtg0NQ==
   dependencies:
     "@cliz/core" "^1.0.18"
+
+"@cliz/cli@^1.0.27":
+  version "1.0.27"
+  resolved "https://registry.npmmirror.com/@cliz/cli/-/cli-1.0.27.tgz#0f74c5de59d5b5d52ab5abb73e770c22cb743658"
+  integrity sha512-mC8NsiHx63NPCNuRYyAniJEO5aK7N90G0A3qDutGPmmpBslENb9x0sOXAWERe1fDCd9pJSQwf4QnkUujbaCQMg==
+  dependencies:
+    "@cliz/core" "^1.0.22"
 
 "@cliz/commit@^0.0.38":
   version "0.0.38"
@@ -456,14 +485,28 @@
     inquirer "^8.2.0"
     update-notifier "^5.1.0"
 
-"@cliz/inlets@^0.12.25":
-  version "0.12.25"
-  resolved "https://registry.yarnpkg.com/@cliz/inlets/-/inlets-0.12.25.tgz#d29d2878a1cf9249a1e4cbf8bed99c29da2562ed"
-  integrity sha512-IJP8sjZx8zq2w96EQ6qXzC9OXMDoZ+o+euYZx75yPGW4kbBlzbk4FhtyNcp/BtCMaPyQlLkq8ekrBVhPvLulpw==
+"@cliz/core@^1.0.22":
+  version "1.0.22"
+  resolved "https://registry.npmmirror.com/@cliz/core/-/core-1.0.22.tgz#f16c2e4dd7d86571cf53af8b7be8451cdf5be9b9"
+  integrity sha512-bQd7gOznQplrF6SSPClJcYUdfXvyXJfOz4uzuxhiQHouC59RIUaFAAyaawgtIVI2b7NyUUUNEENMG9HDIbT42w==
   dependencies:
-    "@cliz/cli" "^1.0.21"
+    "@caporal/core" "^2.0.2"
+    "@cliz/api" "^1.0.16"
+    "@types/inquirer" "^8.1.3"
+    "@types/update-notifier" "^5.1.0"
+    "@zodash/doreamon" "^1.0.6"
+    "@zodash/logger" "^0.2.30"
+    inquirer "^8.2.0"
+    update-notifier "^5.1.0"
+
+"@cliz/inlets@^0.12.35":
+  version "0.12.35"
+  resolved "https://registry.npmmirror.com/@cliz/inlets/-/inlets-0.12.35.tgz#37feb60aa675e17bdbd24cf645e3c03242fc78be"
+  integrity sha512-OZR0OY5Ahlm1Atl38Lx7Qur6VSVBHBve0qLEwpVgWOLE4JQFbFkJXzPyU0CkoCL30O9vn9n8bVvol9I3WOFpIA==
+  dependencies:
+    "@cliz/cli" "^1.0.27"
     "@types/ws" "^7.4.4"
-    "@znode/healthcheck" "^0.0.4"
+    "@znode/healthcheck" "^0.0.10"
     "@znode/nobot" "^0.0.4"
     "@zodash/aes" "^0.0.4"
     "@zodash/compose" "^0.1.6"
@@ -1673,14 +1716,12 @@
     toml "^3.0.0"
     tslib "^2.3.1"
 
-"@znode/healthcheck@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@znode/healthcheck/-/healthcheck-0.0.4.tgz#b2689f23d4c6b16d482f94285b2084484f4d6339"
-  integrity sha512-UyYtx620RgkAQMjA0Oqssqokl6PhtlKFvMPOZq8n3ziz6qVsxYWbMjo/YB5sgTmFGOO4IxG98CNHs4Sut3RfHw==
+"@znode/healthcheck@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.npmmirror.com/@znode/healthcheck/-/healthcheck-0.0.10.tgz#85dad6228c5909626f5d338fab5f68cf75823569"
+  integrity sha512-T+RiI8fbVmisGvuUq0TLgwFpdk2zBgb9uOlzxVub7vndKztn1LxDq3KbeJABAZZJp7qWNlZGgWMM5pwUK3A6SA==
   dependencies:
     "@zcorky/fz" "^1.2.7"
-    icmp "^2.0.1"
-    net-ping "^1.2.3"
 
 "@znode/nobot-dingtalk@^0.0.2":
   version "0.0.2"
@@ -4605,13 +4646,6 @@ husky@^7.0.4:
   resolved "https://registry.yarnpkg.com/husky/-/husky-7.0.4.tgz#242048245dc49c8fb1bf0cc7cfb98dd722531535"
   integrity sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==
 
-icmp@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/icmp/-/icmp-2.0.1.tgz#4c9ad935f9d030626fdbe192574ed4614de511c3"
-  integrity sha512-M7r2J6pjZOwZFSjsFNvYlWvtpVbCckwCd2EQSHc4Mzscwp9X7DUpnPcQiVceKI9YQ42INb53cMmgIzaRs87Jmg==
-  dependencies:
-    raw-socket "^1.7.0"
-
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
@@ -6205,11 +6239,6 @@ mute-stream@0.0.8:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.8.tgz#1630c42b2251ff81e2a283de96a5497ea92e5e0d"
   integrity sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==
 
-nan@2.14.*:
-  version "2.14.2"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
-  integrity sha512-M2ufzIiINKCuDfBSAUr1vWQ+vuVcA9kqx8JJUsbQi6yf1uGRyb7HfpdfUr5qLXf3B/t8dPvcjhKMmlfnP47EzQ==
-
 nan@^2.14.0:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.15.0.tgz#3f34a473ff18e15c1b5626b62903b5ad6e665fee"
@@ -6234,13 +6263,6 @@ negotiator@0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.3.tgz#58e323a72fedc0d6f9cd4d31fe49f51479590ccd"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
-
-net-ping@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/net-ping/-/net-ping-1.2.3.tgz#c4dd248f6e3d8d73db6928002106bb71ceae4a40"
-  integrity sha512-ZKxj/kVPKL2RIsV9nR6I8nMT8Pi3k6ciTBKxD/6gd5lga9qcNmlyqNv+dbXqYGBvHsmG9yIpsfajr8X054x2fQ==
-  dependencies:
-    raw-socket "*"
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -6944,13 +6966,6 @@ quick-lru@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-4.0.1.tgz#5b8878f113a58217848c6482026c73e1ba57727f"
   integrity sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==
-
-raw-socket@*, raw-socket@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/raw-socket/-/raw-socket-1.7.0.tgz#cd0bcc3da52450dcb6b9efe7a6d0890bf1aaf9db"
-  integrity sha512-mXqWihgwaFNmV5le0dWk5o+03M3A2zBIkC9BNaE6R0CJN9eYot++j2FIqgNSDq6/Vmu32PPI155SiiWNV2yyFQ==
-  dependencies:
-    nan "2.14.*"
 
 rc@^1.2.7, rc@^1.2.8:
   version "1.2.8"

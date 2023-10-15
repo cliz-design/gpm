@@ -102,7 +102,7 @@
   "dependencies": {
     "@cliz/cli": "^1.0.21",
     "@cliz/commit": "^0.0.38",
-    "@cliz/inlets": "^0.12.25",
+    "@cliz/inlets": "^0.12.35",
     "@cliz/open": "^0.0.22",
     "@cliz/proxy": "^0.0.19",
     "@cliz/web-terminal": "^1.0.21",
