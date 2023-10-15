@@ -82,11 +82,15 @@ export class PackageManager implements IPackageManager {
         type: 'text',
         message: `New version (origin: ${originVersion})?`,
         default: `v${semver.inc(originVersion, 'patch')}`,
-        validate: (newVersion) => {
+        validate: (newVersion: string) => {
           if (!newVersion) throw new Error(`New version is required`);
           if (!/^v/.test(newVersion)) throw new Error(`New version should start with v`);
-          if (!semver.gt(newVersion.slice(1), originVersion)) {
-            throw new Error(`New version should large than ${originVersion}`);
+          if (!newVersion.includes('-')) {
+            if (!semver.gt(newVersion.slice(1), originVersion)) {
+              throw new Error(`New version should large than ${originVersion}`);
+            }
+          } else {
+            // custom version
           }
 
           return true;
