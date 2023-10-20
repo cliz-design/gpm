@@ -70,7 +70,14 @@ export class PackageManager implements IPackageManager {
     await runInShell(`git push origin ${tag}`, { cwd: projectPath });
 
     // 6. push master
-    await runInShell(`git push origin master`, { cwd: projectPath });
+    let current_branch = 'master';
+    try {
+      current_branch = await api.$`git rev-parse --abbrev-ref HEAD`;
+    } catch (error) {
+      // nothing
+    }
+
+    await runInShell(`git push origin ${current_branch}`, { cwd: projectPath });
   }
 
   // inputNewVersion from origin version to new version
