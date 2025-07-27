@@ -1,8 +1,8 @@
 import { api } from '@cliz/cli';
 import * as path from 'path';
 import * as parseGitUrl from 'git-url-parse';
-import * as config from '@znode/config';
 import { runInShell } from '../utils';
+import { ConfigManager } from './config';
 
 export interface IProjectManager {
   create(name: string, template: string): Promise<void>;
@@ -32,9 +32,7 @@ export interface ProjectAddOptions {
 }
 
 export class ProjectManager implements IProjectManager {
-  public readonly config = new ProjectManagerConfig<
-    Record<string, IProject>
-  >();
+  public readonly config = new ConfigManager<Record<string, IProject>>(api.path.homedir(`.gpm/project.yml`));
 
   constructor(
     private readonly workdir: string, // private readonly options?: ProjectManagerOptions,
@@ -78,7 +76,7 @@ export class ProjectManager implements IProjectManager {
 
     if (await this.existDir(project)) {
       // save info
-      this.config.set(project.id, project.toJSON());
+      this.config.set(project.id, project.toJSON(), true);
 
       throw new Error(
         `project ${project.name}(${project.repo}) found in ${project.path}, use another`,
@@ -89,13 +87,19 @@ export class ProjectManager implements IProjectManager {
 
     // @TODO define template
 
-    this.config.set(project.id, project.toJSON());
+    this.config.set(project.id, project.toJSON(), true);
   }
 
   public async add(url: string, options?: ProjectAddOptions): Promise<void> {
     let shouldClone = true;
 
     const project = new Project({ url, workdir: this.workdir });
+
+    // save data
+    if (!this.config.get(project.id)) {
+      this.config.set(project.id, project.toJSON(), true);
+    }
+
     if (await this.has(project) && await this.existDir(project)) {
       throw new Error(
         `project ${project.name}(${project.repo}) found in ${project.path}`,
@@ -113,9 +117,7 @@ export class ProjectManager implements IProjectManager {
       await runInShell(cmd);
     }
 
-    this.config.set(project.id, project.toJSON());
-
-    // await this.config.sync();
+    this.config.set(project.id, project.toJSON(), true);
   }
 
   public async remove(
@@ -142,9 +144,7 @@ export class ProjectManager implements IProjectManager {
       await api.fs.rimraf(project.path);
     }
 
-    this.config.set(project.id, null);
-
-    await this.config.sync();
+    this.config.set(project.id, null, true);
   }
 
   public async sync(
@@ -178,7 +178,7 @@ export class ProjectManager implements IProjectManager {
       child.on('data', (e: any) => process.stdout.write(e));
       child.on('exit', () => {
         project.updatedAt = new Date();
-        this.config.set(project.id, project.toJSON());
+        this.config.set(project.id, project.toJSON(), true);
 
         resolve();
       });
@@ -193,7 +193,7 @@ export class ProjectManager implements IProjectManager {
   public async search(keyword?: string) {
     const config = this.config.getAll();
     const projects = Object.values(config).sort((a, b) =>
-      a.id.localeCompare(b.id),
+      a?.id?.localeCompare(b?.id),
     );
 
     if (!keyword) {
@@ -221,6 +221,9 @@ export class ProjectManager implements IProjectManager {
     }
 
     await this.config.prepare();
+
+    // @TODO
+    await this.config.nomorlize();
   }
 
   public get(url: string) {
@@ -244,68 +247,6 @@ export class ProjectManager implements IProjectManager {
     }
 
     return false;
-  }
-}
-
-export class ProjectManagerConfig<Config extends object> {
-  private name = 'project';
-  private parent = 'gpm';
-  public path = api.path.homedir(`.${this.parent}/${this.name}.yml`); // $HOME/.gpm/project.yml
-  private _config: Config;
-
-  public isReady = false;
-
-  constructor() { }
-
-  private async load() {
-    this._config = await config.load({ path: this.path });
-    if (!this._config) this._config = {} as any;
-
-    this.isReady = true;
-  }
-
-  public async sync() {
-    // sort config
-    const config = Object.keys(this._config)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((all, path) => {
-        all[path] = this._config[path];
-        return all;
-      }, {} as Config);
-
-    await api.fs.yml.write(this.path, config);
-  }
-
-  private ensure() {
-    if (!this.isReady) {
-      throw new Error(`config is not ready`);
-    }
-  }
-
-  public async prepare() {
-    await this.load();
-  }
-
-  public get<K extends keyof Config>(key: K): Config[K] {
-    this.ensure();
-
-    return this._config[key];
-  }
-
-  public set<K extends keyof Config>(key: string, value: Config[K]) {
-    this.ensure();
-
-    if (!value) {
-      delete this._config[key];
-    } else {
-      this._config[key] = value;
-    }
-
-    this.sync().catch((error) => console.error('config sync error:', error));
-  }
-
-  public getAll(): Config {
-    return this._config;
   }
 }
 

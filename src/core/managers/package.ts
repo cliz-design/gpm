@@ -1,5 +1,5 @@
+import { ConfigManager } from './config';
 import { api, inquirer } from '@cliz/cli';
-import * as config from '@znode/config';
 import * as path from 'path';
 import * as semver from 'semver';
 import { Event as EventEmitter } from '@zodash/event';
@@ -9,14 +9,17 @@ export interface IPackageManager {
   release(option?: ReleaseOptions): Promise<void>;
 }
 
-export interface ReleaseOptions {}
+export interface ReleaseOptions { }
+
+export interface PackageManagerConfig {
+  release?: string | string[],
+}
 
 export class PackageManager implements IPackageManager {
-  public readonly config = new PackageManagerConfig<{
-    release?: string | string[];
-  }>();
+  public readonly config = new ConfigManager<PackageManagerConfig>(api.path.cwd('.gpm.yml'));
 
   public async release() {
+    // 1. custom release progress with command
     const releaseCommand = this.config.get('release');
     if (releaseCommand) {
       const commands = Array.isArray(releaseCommand)
@@ -32,23 +35,69 @@ export class PackageManager implements IPackageManager {
       });
     }
 
-    // Node.js
-    const pkgPath = path.resolve(process.cwd(), 'package.json');
-    if (!api.fs.exist(pkgPath)) {
-      throw new Error(`Cannot found package.json in current path`);
+    // 2. release
+    const projectPath = process.cwd();
+
+    // 2.1 Node.js package
+    const nodejsPath = path.resolve(projectPath, 'package.json');
+    // 2.2 Go
+    const goPath = path.resolve(projectPath, 'go.mod');
+    // 2.3 Zmicro
+    // const zmicroPath = path.resolve(projectPath, 'mod');
+
+    // format: x.y.z, means 1.0.0
+    // notice: not vx.y.z, not v1.0.0
+    let newVersion = '';
+    if (await api.fs.exist(nodejsPath)) {
+      newVersion = await this.releaseNodePackage(nodejsPath);
+    } else if (await api.fs.exist(goPath)) {
+      newVersion = await this.releaseGoPackage(goPath);
     }
 
-    const pkg = await api.fs.json.load(pkgPath);
+    // if found v prefix, maybe should check releaseNodePackage or releaseGoPackage
+    if (/^v/.test(newVersion)) {
+      throw new Error(`invalid new version ${newVersion}, should not start with v`);
+    }
+
+    // 3. commit message
+    await api.$`git commit -m "chore(release): bumped version to v${newVersion}"`;
+
+    // 4. create version tag
+    const tag = `v${newVersion}`;
+    await api.$`git tag ${tag}`;
+
+    // 5. push tag
+    await runInShell(`git push origin ${tag}`, { cwd: projectPath });
+
+    // 6. push master
+    let current_branch = 'master';
+    try {
+      current_branch = await api.$`git rev-parse --abbrev-ref HEAD`;
+    } catch (error) {
+      // nothing
+    }
+
+    await runInShell(`git push origin ${current_branch}`, { cwd: projectPath });
+  }
+
+  // inputNewVersion from origin version to new version
+  //  1.0.0 -> 1.0.1
+  private async inputNewVersion(originVersion: string) {
     const answers = await inquirer.prompt([
       {
         name: 'newVersion',
         type: 'text',
-        message: 'New version ?',
-        default: semver.inc(pkg.version, 'patch'),
-        validate: (newVersion) => {
+        message: `New version (origin: ${originVersion})?`,
+        default: `v${semver.inc(originVersion, 'patch')}`,
+        validate: (newVersion: string) => {
           if (!newVersion) throw new Error(`New version is required`);
-          if (!semver.gt(newVersion, pkg.version)) {
-            throw new Error(`New version should large than ${pkg.version}`);
+          if (!/^v/.test(newVersion)) throw new Error(`New version should start with v`);
+          if (!newVersion.includes('-')) {
+            if (!semver.gt(newVersion.slice(1), originVersion)) {
+              throw new Error(`New version should large than ${originVersion}`);
+            }
+          } else {
+            // custom version
           }
 
           return true;
@@ -56,81 +105,69 @@ export class PackageManager implements IPackageManager {
       },
     ]);
 
-    const newVersion = (pkg.version = answers.newVersion as any as string);
-    // sorted
-    api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
-    const tag = `v${newVersion}`;
-    await api.$`git tag ${tag}`;
+    // 2. change package.json version and write
+    let newVersion = answers.newVersion as any as string;
+    // fix version
+    //  v1.0.0 -> 1.0.0
+    //  1.0.0 -> 1.0.0
+    if (/^v/.test(newVersion)) {
+      newVersion = newVersion.slice(1);
+    }
 
-    await runInShell(`git push origin ${tag}`);
+    return newVersion;
+  }
+
+  private async releaseNodePackage(pkgPath: string): Promise<string> {
+    const pkg = await api.fs.json.load(pkgPath);
+    const projectPath = path.dirname(pkgPath);
+
+    // 1. get version
+    const newVersion = pkg.version = await this.inputNewVersion(pkg.version);
+
+    // sorted
+    await api.fs.writeFile(pkgPath, JSON.stringify(sortPackageJSON(pkg), null, 2));
+
+    // 3. commit change
+    await api.$.cd(projectPath);
+    await api.$`git add ${pkgPath}`;
+
+    return newVersion;
+  }
+
+  private async releaseGoPackage(gomodPath: string): Promise<string> {
+    const projectPath = path.dirname(gomodPath);
+    const versionPath = api.path.join(projectPath, 'version.go');
+    let lastVersion = "0.0.0"
+    if (!await api.fs.exist(versionPath)) {
+      throw new Error(`version.go not found, please create it first, must include format: var Version = "1.0.0"`);
+    }
+
+    const text = await api.fs.readFile(versionPath, 'utf8');
+    const matched = text.match(/var Version = "(.*)"/);
+
+    if (!matched || !matched[1]) {
+      throw new Error(`invalid version.go, should be format like: var Version = "1.0.0"`);
+    }
+
+    lastVersion = matched[1];
+
+    // 1. get version
+    const newVersion = await this.inputNewVersion(lastVersion);
+
+    const versionFileText = text.replace(/var Version = "(.*)"/, `var Version = "${newVersion}"`);
+
+    // sync to version.go
+    await api.fs.writeFile(versionPath, versionFileText);
+
+    // 3. commit change
+    await api.$.cd(projectPath);
+    await api.$`git add ${versionPath}`;
+
+    return newVersion;
   }
 
   public async prepare() {
     await this.config.prepare();
-  }
-}
-
-export class PackageManagerConfig<Config extends object> {
-  public path = path.join(process.cwd(), '.gpm.yml'); // $PWD/.gpm.yml
-  private _config: Config;
-
-  public isReady = false;
-
-  constructor() {}
-
-  private async load() {
-    if (await api.fs.exist(this.path)) {
-      console.log('xxx:');
-      this._config = await config.load({ path: this.path });
-    } else {
-      this._config = {} as any;
-    }
-
-    this.isReady = true;
-  }
-
-  private async sync() {
-    // sort config
-    const config = Object.keys(this._config)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((all, path) => {
-        all[path] = this._config[path];
-        return all;
-      }, {} as Config);
-
-    await api.fs.yml.write(this.path, config);
-  }
-
-  private ensure() {
-    if (!this.isReady) {
-      throw new Error(`config is not ready`);
-    }
-  }
-
-  public async prepare() {
-    await this.load();
-  }
-
-  public get<K extends keyof Config>(key: K): Config[K] {
-    this.ensure();
-
-    return this._config[key];
-  }
-
-  public set<K extends keyof Config>(key: string, value: Config[K]) {
-    this.ensure();
-
-    if (!value) {
-      delete this._config[key];
-    } else {
-      this._config[key] = value;
-    }
-
-    this.sync().catch((error) => console.error('config sync error:', error));
-  }
-
-  public getAll(): Config {
-    return this._config;
   }
 }
 

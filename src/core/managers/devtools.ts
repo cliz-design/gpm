@@ -1,9 +1,9 @@
 import { resolve } from 'path';
 import { ChildProcess } from 'child_process';
 import { api, inquirer, doreamon } from '@cliz/cli';
-import * as config from '@znode/config';
 
 import { runInBackground, runInShell } from '../utils';
+import { ConfigManager } from './config';
 
 export interface IDevTools {
   bootstrap(options?: BootstrapOptions): Promise<void>;
@@ -33,7 +33,9 @@ export interface BuildOptions extends DevToolsOptions { }
 
 export interface TestOptions extends DevToolsOptions { }
 
-export interface FmtOptions extends DevToolsOptions { }
+export interface FmtOptions extends DevToolsOptions {
+  dirOrGlob?: string;
+}
 
 export interface RunOptions extends DevToolsOptions { }
 
@@ -48,25 +50,39 @@ export interface WatchOptions extends DevToolsOptions {
 
 export interface CliOptions extends DevToolsOptions { }
 
+export interface DevToolsConfig {
+  bootstrap?: string;
+  dev?: string;
+  build?: string;
+  test?: string;
+  fmt?: string;
+  run?: string;
+  watch?: string;
+  cli?: string;
+  install?: string;
+  clean?: string;
+}
+
 export class DevTools implements IDevTools {
   private logger = doreamon.logger.getLogger('DevTools');
 
-  public readonly config = new DevToolsConfig<{
-    bootstrap?: string;
-    dev?: string;
-    build?: string;
-    test?: string;
-    fmt?: string;
-    run?: string;
-    watch?: string;
-    cli?: string;
-    install?: string;
-    clean?: string;
-  }>();
+  public readonly config = new ConfigManager<DevToolsConfig>(api.path.cwd('.gpm.yml'));
 
   public async bootstrap(options?: BuildOptions) {
-    const command =
-      options?.command ?? this.config.get('bootstrap') ?? 'yarn bootstrap';
+    let command =
+      options?.command ?? this.config.get('bootstrap') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn bootstrap';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm run bootstrap';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm run bootstrap';
+      } else {
+        command = 'yarn bootstrap';
+      }
+    }
 
     if (Array.isArray(command)) {
       await Promise.all(command.map((e) => runInShell(e)));
@@ -120,6 +136,7 @@ export class DevTools implements IDevTools {
 
   public async fmt(options?: FmtOptions) {
     let command = options?.command ?? this.config.get('fmt');
+    const context = options?.context ?? process.cwd();
     if (!command) {
       const prettier = `${resolve(
         __dirname,
@@ -130,13 +147,13 @@ export class DevTools implements IDevTools {
         '../../../config/prettierrc.json',
       );
 
-      let dir = 'src/**/*.{ts,tsx,js,jsx,json,md}';
+      let glob = options?.dirOrGlob ?? `src/**/*.{ts,tsx,js,jsx,json,md}`;
       // monorepo
-      if (await api.fs.exist(resolve(__dirname, 'packages/'))) {
-        dir = `packages/**/src/*.{ts,tsx,js,jsx,json,md}`;
+      if (await api.fs.exist(resolve(context, 'packages/'))) {
+        glob = options?.dirOrGlob ? `packages/**/${options?.dirOrGlob}` : `packages/**/src/*.{ts,tsx,js,jsx,json,md}`;
       }
 
-      command = `${prettier} --no-error-on-unmatched-pattern --write '${dir}' --config ${prettierConfigPath}`;
+      command = `${prettier} --no-error-on-unmatched-pattern --write '${glob}' --config ${prettierConfigPath}`;
     }
 
     if (Array.isArray(command)) {
@@ -244,7 +261,19 @@ export class DevTools implements IDevTools {
   }
 
   public async cli(options?: CliOptions) {
-    const command = options?.command ?? this.config.get('cli') ?? 'yarn cli';
+    let command = options?.command ?? this.config.get('cli') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn cli';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm run cli';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm run cli';
+      } else {
+        command = 'yarn cli';
+      }
+    }
 
     // parallel
     if (Array.isArray(command)) {
@@ -256,7 +285,19 @@ export class DevTools implements IDevTools {
   }
 
   public async install(options?: InstallOptions) {
-    const command = options?.command ?? this.config.get('install') ?? 'yarn';
+    let command = options?.command ?? this.config.get('install') ?? '';
+
+    if (command === '') {
+      if (await api.fs.exist(api.path.join(process.cwd(), 'yarn.lock'))) {
+        command = 'yarn';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'pnpm-lock.yaml'))) {
+        command = 'pnpm';
+      } else if (await api.fs.exist(api.path.join(process.cwd(), 'package-lock.json'))) {
+        command = 'npm';
+      } else {
+        command = 'yarn';
+      }
+    }
 
     if (Array.isArray(command)) {
       await Promise.all(command.map((e) => runInShell(e)));
@@ -301,6 +342,8 @@ export class DevTools implements IDevTools {
     }
   }
 
+
+  // xxx
   public async commit() {
     const command = `${resolve(
       __dirname,
@@ -312,68 +355,5 @@ export class DevTools implements IDevTools {
 
   public async prepare() {
     await this.config.prepare();
-  }
-}
-
-export class DevToolsConfig<Config extends object> {
-  public path = resolve(process.cwd(), '.gpm.yml'); // $PWD/.gpm.yml
-  private _config: Config;
-
-  public isReady = false;
-
-  constructor() { }
-
-  private async load() {
-    if (await api.fs.exist(this.path)) {
-      this._config = await config.load({ path: this.path });
-    } else {
-      this._config = {} as any;
-    }
-
-    this.isReady = true;
-  }
-
-  private async sync() {
-    // sort config
-    const config = Object.keys(this._config)
-      .sort((a, b) => a.localeCompare(b))
-      .reduce((all, path) => {
-        all[path] = this._config[path];
-        return all;
-      }, {} as Config);
-
-    await api.fs.yml.write(this.path, config);
-  }
-
-  private ensure() {
-    if (!this.isReady) {
-      throw new Error(`config is not ready`);
-    }
-  }
-
-  public async prepare() {
-    await this.load();
-  }
-
-  public get<K extends keyof Config>(key: K): Config[K] {
-    this.ensure();
-
-    return this._config?.[key] ?? null;
-  }
-
-  public set<K extends keyof Config>(key: string, value: Config[K]) {
-    this.ensure();
-
-    if (!value) {
-      delete this._config[key];
-    } else {
-      this._config[key] = value;
-    }
-
-    this.sync().catch((error) => console.error('config sync error:', error));
-  }
-
-  public getAll(): Config {
-    return this._config;
   }
 }

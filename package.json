@@ -1,6 +1,6 @@
 {
   "name": "@cliz/gpm",
-  "version": "1.3.1",
+  "version": "1.4.10",
   "description": "Git Project Manager",
   "keywords": [
     "cliz",
@@ -48,7 +48,23 @@
     "clean": "rm -rf lib",
     "test": "jest -w 1",
     "coverage": "codecov",
-    "cli": "node lib/cli.js"
+    "cli": "node lib/cli.js",
+    "register": "yarn cliz global register"
+  },
+  "lint-staged": {
+    "**/*.ts": [
+      "echo 'lint stage run'",
+      "prettier --write --ignore-unknown",
+      "eslint --fix"
+    ],
+    "*.{json.css,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "lint-staged": {
     "**/*.ts": [
@@ -135,7 +151,7 @@
     "jest": "^27.5.1",
     "lint-staged": "^12.3.7",
     "ts-jest": "^27.1.4",
-    "typescript": "4.4.3"
+    "typescript": "^4.6.3"
   },
   "publishConfig": {
     "access": "public"
