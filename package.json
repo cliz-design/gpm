@@ -1,6 +1,6 @@
 {
   "name": "@cliz/gpm",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "Git Project Manager",
   "keywords": [
     "cliz",
@@ -50,6 +50,21 @@
     "coverage": "codecov",
     "cli": "node lib/cli.js"
   },
+  "lint-staged": {
+    "**/*.ts": [
+      "echo 'lint stage run'",
+      "prettier --write --ignore-unknown",
+      "eslint --fix"
+    ],
+    "*.{json.css,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "jest": {
     "roots": [
       "__tests__"
@@ -84,14 +99,14 @@
     "preset": "ts-jest"
   },
   "dependencies": {
-    "@cliz/cli": "^1.0.8",
-    "@cliz/commit": "^0.0.22",
-    "@cliz/inlets": "^0.12.12",
+    "@cliz/cli": "^1.0.28",
+    "@cliz/commit": "^0.0.43",
+    "@cliz/inlets": "^1.0.6",
     "@cliz/open": "^0.0.9",
-    "@cliz/proxy": "^0.0.6",
-    "@cliz/web-terminal": "^1.0.8",
-    "@znode/node-info": "^0.0.14",
-    "@znode/os-info": "^0.0.2",
+    "@cliz/proxy": "^0.0.26",
+    "@cliz/web-terminal": "^1.2.2",
+    "@znode/node-info": "^0.0.15",
+    "@znode/os-info": "^0.0.3",
     "git-url-parse": "^11.6.0",
     "prettier": "^2.4.1",
     "semver": "^7.3.5"
@@ -124,21 +139,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "lint-staged": {
-    "**/*.ts": [
-      "echo 'lint stage run'",
-      "prettier --write --ignore-unknown",
-      "eslint --fix"
-    ],
-    "*.{json.css,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
   },
   "cliz": {
     "name": "gpm"
